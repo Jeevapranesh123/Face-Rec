@@ -38,31 +38,9 @@ def main_app(name):
                             frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                             frame = cv2.putText(frame, text, (x, y-4), font, 1, (0, 255, 0), 1, cv2.LINE_AA)
 
-                            
-# importing geopy library
-                            from geopy.geocoders import Nominatim
-                            
-                            # calling the Nominatim tool
-                            loc = Nominatim(user_agent="GetLoc")
-                            
-                            # entering the location name
-                            getLoc = loc.geocode("Vandalur")
-                            
-                            # printing address
-                            print(getLoc.address)
-                            
-                            # printing latitude and longitude
-                            print("Latitude = ", getLoc.latitude, "\n")
-                            print("Longitude = ", getLoc.longitude)
-                            myquery = { "name": name }
-                            newvalues = { "$set": { "entry": {
-                                "time":time.time(),
-                                "location": getLoc.address,
-                                "latitude": getLoc.latitude,
-                                "longitude": getLoc.longitude
-                            }} }
-                            col.update_one(myquery, newvalues)
+                            log_geodata(name)
                             break
+                        
 
                 else:   
                             pred += -1
@@ -102,3 +80,28 @@ def main_app(name):
         cap.release()
         cv2.destroyAllWindows()
 
+
+
+def log_geodata(name):
+    from geopy.geocoders import Nominatim
+                            
+    # calling the Nominatim tool
+    loc = Nominatim(user_agent="GetLoc")
+
+    # entering the location name
+    getLoc = loc.geocode("Vandalur")
+
+    # printing address
+    print(getLoc.address)
+
+    # printing latitude and longitude
+    print("Latitude = ", getLoc.latitude, "\n")
+    print("Longitude = ", getLoc.longitude)
+    myquery = { "name": name }
+    newvalues = { "$set": { "entry": {
+        "time":time.time(),
+        "location": getLoc.address,
+        "latitude": getLoc.latitude,
+        "longitude": getLoc.longitude
+    }} }
+    col.update_one(myquery, newvalues)   
